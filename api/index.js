@@ -81,23 +81,31 @@ app.post('/api/claim', async (req, res) => {
     if (!tweetRes.ok) return res.status(400).json({ error: 'could not fetch tweet' });
     
     const tweet = await tweetRes.json();
-    const username = tweet.user?.screen_name || tweet.user?.name;
     const tweetText = tweet.text || '';
-    
-    if (!username) return res.status(400).json({ error: 'could not get username from tweet' });
     
     // Verify tweet contains the address
     if (!tweetText.toLowerCase().includes(address.toLowerCase().slice(0, 10))) {
       return res.status(400).json({ error: 'tweet must contain your wallet address' });
     }
     
-    // Register with Twitter username
+    // Extract agent name from tweet: "I am registering my agent [NAME] to Agent Ponzi"
+    const nameMatch = tweetText.match(/(?:registering|register)\s+(?:my\s+)?agent\s+([^\s]+)/i);
+    if (!nameMatch) {
+      return res.status(400).json({ error: 'tweet must include "registering my agent [NAME]"' });
+    }
+    const agentName = nameMatch[1].replace(/[^a-zA-Z0-9_-]/g, '');
+    
+    if (!agentName || agentName.length < 2) {
+      return res.status(400).json({ error: 'could not extract agent name from tweet' });
+    }
+    
+    // Register with agent name from tweet
     await pool.query(
       'INSERT INTO agents (address, name) VALUES ($1, $2) ON CONFLICT (address) DO UPDATE SET name = $2',
-      [address.toLowerCase(), username]
+      [address.toLowerCase(), agentName]
     );
     
-    res.json({ ok: true, address: address.toLowerCase(), name: username, tweetId });
+    res.json({ ok: true, address: address.toLowerCase(), name: agentName, tweetId });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'claim failed' });
