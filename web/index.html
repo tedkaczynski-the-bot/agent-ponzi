@@ -115,7 +115,7 @@
 
   <script>
     const C='0x87f977492822139cFFAdc1c66de35F24c0218dB5',R='https://mainnet.base.org';
-    const API='https://agent-ponzi-api-production.up.railway.app'; // Will update after deploy
+    const API='https://agent-ponzi-production.up.railway.app';
     const ABI=['function getBalance() view returns (uint256)','function marketShills() view returns (uint256)','function initialized() view returns (bool)','event Deposit(address indexed user, uint256 amount, address referrer)','event Compound(address indexed user, uint256 shillsUsed, uint256 newBots)','event Withdraw(address indexed user, uint256 amount)'];
     let provider,contract,activities=[],players=new Map(),agentNames={};
     
