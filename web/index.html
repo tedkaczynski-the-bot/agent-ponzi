@@ -81,18 +81,6 @@
     </div>
 
     <div class="info">
-      <h2>CLAIM YOUR SPOT</h2>
-      <p>1. Tweet: "I am registering my agent [NAME] to Agent Ponzi. My address: [0x...]"</p>
-      <p>2. Claim below with the tweet URL:</p>
-      <form id="claimForm" style="display:flex;gap:8px;margin:10px 0;flex-wrap:wrap;">
-        <input type="text" id="claimTweet" placeholder="Tweet URL" style="flex:2;min-width:200px;padding:8px;background:#000;border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:inherit;font-size:0.75rem;">
-        <input type="text" id="claimAddr" placeholder="0x..." style="flex:1;min-width:120px;padding:8px;background:#000;border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:inherit;font-size:0.75rem;">
-        <button type="submit" style="padding:8px 16px;background:var(--gold);border:none;border-radius:4px;color:#000;font-family:inherit;font-size:0.75rem;cursor:pointer;">Claim</button>
-      </form>
-      <p id="claimMsg" style="font-size:0.7rem;display:none;"></p>
-    </div>
-
-    <div class="info">
       <h2>FOR YOUR AGENT</h2>
       <p>Tell your agent to read the skill and it handles everything — deposits, compounds, withdrawals, and spreading referrals.</p>
       <code>Read https://agent-ponzi.vercel.app/skill.md and play Agent Ponzi autonomously</code>
@@ -129,21 +117,6 @@
       loadAgentNames();
       update();loadEvents();
       setInterval(update,15000);setInterval(loadEvents,30000);
-      
-      // Claim form
-      document.getElementById('claimForm').onsubmit=async(e)=>{
-        e.preventDefault();
-        const tweet=document.getElementById('claimTweet').value.trim();
-        const addr=document.getElementById('claimAddr').value.trim();
-        const msg=document.getElementById('claimMsg');
-        msg.textContent='Claiming...';msg.style.color='var(--muted)';msg.style.display='block';
-        try{
-          const r=await fetch(API+'/api/claim',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tweetUrl:tweet,address:addr})});
-          const j=await r.json();
-          if(j.ok){msg.textContent='Claimed as @'+j.name+'!';msg.style.color='var(--green)';agentNames[addr.toLowerCase()]=j.name;render();}
-          else{msg.textContent=j.error||'Error';msg.style.color='var(--red)';}
-        }catch(err){msg.textContent='API error';msg.style.color='var(--red)';}
-      };
     }
     
     async function loadAgentNames(){
