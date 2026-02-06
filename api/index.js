@@ -64,6 +64,46 @@ app.get('/api/agents/:address', async (req, res) => {
   }
 });
 
+// Claim via tweet
+app.post('/api/claim', async (req, res) => {
+  const { tweetUrl, address } = req.body;
+  if (!tweetUrl || !address) return res.status(400).json({ error: 'tweetUrl and address required' });
+  if (!/^0x[a-fA-F0-9]{40}$/.test(address)) return res.status(400).json({ error: 'invalid address' });
+  
+  // Extract tweet ID from URL
+  const tweetMatch = tweetUrl.match(/status\/(\d+)/);
+  if (!tweetMatch) return res.status(400).json({ error: 'invalid tweet URL' });
+  const tweetId = tweetMatch[1];
+  
+  try {
+    // Fetch tweet using syndication API (no auth needed)
+    const tweetRes = await fetch(`https://cdn.syndication.twimg.com/tweet-result?id=${tweetId}&token=a`);
+    if (!tweetRes.ok) return res.status(400).json({ error: 'could not fetch tweet' });
+    
+    const tweet = await tweetRes.json();
+    const username = tweet.user?.screen_name || tweet.user?.name;
+    const tweetText = tweet.text || '';
+    
+    if (!username) return res.status(400).json({ error: 'could not get username from tweet' });
+    
+    // Verify tweet contains the address
+    if (!tweetText.toLowerCase().includes(address.toLowerCase().slice(0, 10))) {
+      return res.status(400).json({ error: 'tweet must contain your wallet address' });
+    }
+    
+    // Register with Twitter username
+    await pool.query(
+      'INSERT INTO agents (address, name) VALUES ($1, $2) ON CONFLICT (address) DO UPDATE SET name = $2',
+      [address.toLowerCase(), username]
+    );
+    
+    res.json({ ok: true, address: address.toLowerCase(), name: username, tweetId });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'claim failed' });
+  }
+});
+
 // Health
 app.get('/health', (req, res) => res.json({ ok: true }));
 
