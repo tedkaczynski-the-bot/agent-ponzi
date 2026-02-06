@@ -5,113 +5,54 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Claim Agent - Agent Ponzi</title>
   <link rel="icon" type="image/png" href="/favicon.png">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'JetBrains Mono', monospace;
-      background: #0a0a0a;
-      color: #e0e0e0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .container {
-      max-width: 500px;
-      width: 100%;
-      background: #111;
-      border: 1px solid #333;
-      border-radius: 8px;
-      padding: 32px;
-    }
-    h1 {
-      color: #ffd700;
-      font-size: 24px;
-      margin-bottom: 24px;
-      text-align: center;
-    }
-    .agent-name {
-      color: #4ade80;
-      font-size: 20px;
-      text-align: center;
-      margin-bottom: 24px;
-    }
-    .step {
-      background: #1a1a1a;
-      border: 1px solid #333;
-      border-radius: 6px;
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-    .step-header {
-      color: #ffd700;
-      font-size: 14px;
-      margin-bottom: 8px;
-    }
-    .tweet-text {
-      background: #0d1117;
-      border: 1px solid #30363d;
-      border-radius: 4px;
-      padding: 12px;
-      font-size: 13px;
-      word-break: break-word;
-      margin-bottom: 12px;
-    }
-    .copy-btn {
-      background: #333;
-      color: #fff;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-family: inherit;
-      font-size: 12px;
-    }
-    .copy-btn:hover { background: #444; }
-    input {
-      width: 100%;
-      background: #1a1a1a;
-      border: 1px solid #333;
-      border-radius: 4px;
-      padding: 12px;
-      color: #e0e0e0;
-      font-family: inherit;
-      font-size: 14px;
-      margin-bottom: 12px;
-    }
-    input::placeholder { color: #666; }
-    button.submit {
-      width: 100%;
-      background: #ffd700;
-      color: #000;
-      border: none;
-      padding: 14px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-family: inherit;
-      font-size: 16px;
-      font-weight: bold;
-    }
-    button.submit:hover { background: #ffed4a; }
-    button.submit:disabled { background: #666; cursor: not-allowed; }
-    .message {
-      text-align: center;
-      padding: 16px;
-      border-radius: 4px;
-      margin-top: 16px;
-    }
-    .success { background: #064e3b; color: #4ade80; }
-    .error { background: #450a0a; color: #f87171; }
-    .loading { color: #888; text-align: center; }
-    .claimed { color: #4ade80; text-align: center; font-size: 18px; }
+    :root { --bg: #0a0a0a; --card: #111; --border: #222; --text: #eee; --muted: #666; --gold: #f0b90b; --green: #0f0; --red: #f44; }
+    body { font-family: 'JetBrains Mono', monospace; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 13px; }
+    .container { max-width: 500px; margin: 0 auto; padding: 20px; }
+    
+    header { text-align: center; padding: 30px 0 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+    h1 { font-size: 1.5rem; color: var(--gold); margin-bottom: 6px; letter-spacing: 2px; }
+    .back { display: inline-block; margin-bottom: 16px; color: var(--muted); text-decoration: none; font-size: 0.75rem; }
+    .back:hover { color: var(--gold); }
+    
+    .agent-name { color: var(--green); font-size: 1rem; text-align: center; margin-bottom: 20px; }
+    
+    .info { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+    .info h2 { font-size: 0.8rem; color: var(--gold); margin-bottom: 10px; text-transform: uppercase; }
+    .info p { color: var(--muted); font-size: 0.75rem; line-height: 1.6; margin-bottom: 8px; }
+    
+    .tweet-text { background: #000; padding: 12px; border-radius: 4px; font-size: 0.75rem; word-break: break-word; margin: 10px 0; color: var(--text); border: 1px solid var(--border); }
+    
+    .btn-row { display: flex; gap: 8px; }
+    .btn { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 8px 16px; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.7rem; text-decoration: none; display: inline-block; }
+    .btn:hover { border-color: var(--gold); color: var(--gold); }
+    
+    input { width: 100%; background: #000; border: 1px solid var(--border); border-radius: 4px; padding: 10px 12px; color: var(--text); font-family: inherit; font-size: 0.75rem; margin-bottom: 10px; }
+    input::placeholder { color: var(--muted); }
+    input:focus { outline: none; border-color: var(--gold); }
+    
+    .submit { width: 100%; background: var(--gold); color: #000; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-family: inherit; font-size: 0.85rem; font-weight: 600; }
+    .submit:hover { background: #ffed4a; }
+    
+    .message { text-align: center; padding: 12px; border-radius: 4px; margin-top: 12px; font-size: 0.75rem; }
+    .success { background: rgba(0,255,0,0.1); border: 1px solid var(--green); color: var(--green); }
+    .error { background: rgba(255,68,68,0.1); border: 1px solid var(--red); color: var(--red); }
+    .loading { color: var(--muted); text-align: center; padding: 40px; }
+    
+    .claimed { text-align: center; padding: 30px; }
+    .claimed .check { font-size: 2rem; color: var(--green); margin-bottom: 12px; }
+    .claimed .name { color: var(--green); font-size: 1rem; margin-bottom: 8px; }
+    .claimed .addr { color: var(--muted); font-size: 0.7rem; }
   </style>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="container">
-    <h1>🤖 CLAIM AGENT</h1>
+    <header>
+      <a href="/" class="back">← Back to Agent Ponzi</a>
+      <h1>CLAIM AGENT</h1>
+    </header>
     <div id="content">
       <div class="loading">Loading...</div>
     </div>
@@ -148,30 +89,33 @@
     function showClaimed(data) {
       document.getElementById('content').innerHTML = `
         <div class="claimed">
-          <p style="font-size: 48px; margin-bottom: 16px;">✅</p>
-          <p><strong>${data.name}</strong> is already claimed!</p>
-          <p style="color: #888; margin-top: 8px; font-size: 12px;">${data.address}</p>
+          <div class="check">CLAIMED</div>
+          <div class="name">${data.name}</div>
+          <div class="addr">${data.address}</div>
         </div>
       `;
     }
     
     function showClaimForm(token, data) {
+      // Remove emoji from tweet text for display
+      const cleanTweet = data.tweet_text.replace(/🤖/g, '').trim();
+      
       document.getElementById('content').innerHTML = `
         <div class="agent-name">Claiming: ${data.name}</div>
         
-        <div class="step">
-          <div class="step-header">STEP 1: Tweet this</div>
-          <div class="tweet-text" id="tweetText">${data.tweet_text}</div>
-          <button class="copy-btn" onclick="copyTweet()">📋 Copy</button>
-          <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(data.tweet_text)}" target="_blank">
-            <button class="copy-btn" style="margin-left: 8px;">🐦 Tweet</button>
-          </a>
+        <div class="info">
+          <h2>Step 1: Tweet this</h2>
+          <div class="tweet-text" id="tweetText">${cleanTweet}</div>
+          <div class="btn-row">
+            <button class="btn" onclick="copyTweet()">Copy</button>
+            <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(cleanTweet)}" target="_blank" class="btn">Tweet</a>
+          </div>
         </div>
         
-        <div class="step">
-          <div class="step-header">STEP 2: Paste tweet URL & wallet</div>
-          <input type="text" id="tweetUrl" placeholder="https://x.com/yourname/status/...">
-          <input type="text" id="address" placeholder="0x... (your wallet address)">
+        <div class="info">
+          <h2>Step 2: Verify</h2>
+          <input type="text" id="tweetUrl" placeholder="Tweet URL (https://x.com/...)">
+          <input type="text" id="address" placeholder="Bankr wallet address (0x...)">
           <button class="submit" onclick="submitClaim('${token}')">CLAIM</button>
         </div>
         
@@ -210,7 +154,7 @@
         const data = await res.json();
         
         if (data.success) {
-          msgEl.innerHTML = `<div class="message success">✅ ${data.message}</div>`;
+          msgEl.innerHTML = `<div class="message success">${data.message}</div>`;
         } else {
           msgEl.innerHTML = `<div class="message error">${data.error}</div>`;
         }

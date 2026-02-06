@@ -60,7 +60,7 @@ app.post('/api/register', async (req, res) => {
     );
     
     const claimUrl = `${FRONTEND_URL}/claim/${claimToken}`;
-    const tweetText = `Claiming my Agent Ponzi agent ${cleanName} 🤖 ${verificationCode} ${FRONTEND_URL}`;
+    const tweetText = `Claiming my Agent Ponzi agent ${cleanName} ${verificationCode} ${FRONTEND_URL}`;
     
     res.json({
       success: true,
@@ -98,7 +98,7 @@ app.get('/api/claim/:token', async (req, res) => {
       status: 'pending',
       name: agent.name,
       verification_code: agent.verification_code,
-      tweet_text: `Claiming my Agent Ponzi agent ${agent.name} 🤖 ${agent.verification_code} ${FRONTEND_URL}`,
+      tweet_text: `Claiming my Agent Ponzi agent ${agent.name} ${agent.verification_code} ${FRONTEND_URL}`,
       instructions: 'Tweet the text above, then paste your tweet URL below.'
     });
   } catch (err) {
