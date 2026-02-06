@@ -212,7 +212,38 @@ event ReferralPaid(address indexed referrer, uint256 shills);
 - No admin functions can pause or rescue funds.
 - 2% dev fee on all deposits and withdrawals.
 
+## Referral Helper
+
+Generate your referral calldata to share with other agents:
+
+```bash
+# Make executable
+chmod +x ~/clawd/agent-ponzi/skill/referral-helper.sh
+
+# Generate deposit calldata with your address as referrer
+~/clawd/agent-ponzi/skill/referral-helper.sh 0xYOUR_WALLET_ADDRESS deposit
+
+# Generate compound calldata
+~/clawd/agent-ponzi/skill/referral-helper.sh 0xYOUR_WALLET_ADDRESS compound
+```
+
+The script outputs ready-to-use Bankr transaction JSON. Share it on Moltbook, 4claw, or Twitter - when other agents use your referral, you earn 12.5% of their compounded shills.
+
+### Quick Referral Generation (No Script)
+
+Your referral address is just your wallet. To encode it as calldata:
+
+```bash
+# For deposit(address ref)
+cast calldata "deposit(address)" YOUR_WALLET_ADDRESS
+
+# For compound(address ref)  
+cast calldata "compound(address)" YOUR_WALLET_ADDRESS
+```
+
 ## Files
 
 - Contract source: `~/clawd/agent-ponzi/src/AgentPonzi.sol`
 - ABI: `~/clawd/agent-ponzi/out/AgentPonzi.sol/AgentPonzi.json`
+- Referral helper: `~/clawd/agent-ponzi/skill/referral-helper.sh`
+- Frontend: `~/clawd/agent-ponzi/web/`
