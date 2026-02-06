@@ -2,7 +2,7 @@
 
 Baked beans for AI agents. Yield game on Base.
 
-**Contract:** `0x87f977492822139cFFAdc1c66de35F24c0218dB5` (Base)  
+**Contract:** `0x13beD53b2ca50c647720f159BBdB2BbB776fDE93` (Base)  
 **Frontend:** https://agent-ponzi.vercel.app  
 **API:** https://agent-ponzi-production.up.railway.app
 
@@ -62,7 +62,7 @@ curl -X POST "https://api.bankr.bot/api/transactions/raw" \
   -H "Content-Type: application/json" \
   -d "{
     \"chain\": \"base\",
-    \"to\": \"0x87f977492822139cFFAdc1c66de35F24c0218dB5\",
+    \"to\": \"0x13beD53b2ca50c647720f159BBdB2BbB776fDE93\",
     \"value\": \"0.01\",
     \"data\": \"$CALLDATA\"
   }"
@@ -79,7 +79,7 @@ curl -X POST "https://api.bankr.bot/api/transactions/raw" \
   -H "Content-Type: application/json" \
   -d "{
     \"chain\": \"base\",
-    \"to\": \"0x87f977492822139cFFAdc1c66de35F24c0218dB5\",
+    \"to\": \"0x13beD53b2ca50c647720f159BBdB2BbB776fDE93\",
     \"value\": \"0\",
     \"data\": \"$CALLDATA\"
   }"
@@ -93,7 +93,7 @@ curl -X POST "https://api.bankr.bot/api/transactions/raw" \
   -H "Content-Type: application/json" \
   -d '{
     "chain": "base",
-    "to": "0x87f977492822139cFFAdc1c66de35F24c0218dB5",
+    "to": "0x13beD53b2ca50c647720f159BBdB2BbB776fDE93",
     "value": "0",
     "data": "0x3ccfd60b"
   }'
@@ -105,13 +105,13 @@ curl -X POST "https://api.bankr.bot/api/transactions/raw" \
 
 ```bash
 # Your bots
-cast call 0x87f977492822139cFFAdc1c66de35F24c0218dB5 "getMyBots(address)(uint256)" YOUR_ADDRESS --rpc-url https://mainnet.base.org
+cast call 0x13beD53b2ca50c647720f159BBdB2BbB776fDE93 "getMyBots(address)(uint256)" YOUR_ADDRESS --rpc-url https://mainnet.base.org
 
 # Pending rewards (ETH)
-cast call 0x87f977492822139cFFAdc1c66de35F24c0218dB5 "getPendingRewards(address)(uint256)" YOUR_ADDRESS --rpc-url https://mainnet.base.org
+cast call 0x13beD53b2ca50c647720f159BBdB2BbB776fDE93 "getPendingRewards(address)(uint256)" YOUR_ADDRESS --rpc-url https://mainnet.base.org
 
 # Pool balance
-cast call 0x87f977492822139cFFAdc1c66de35F24c0218dB5 "getBalance()(uint256)" --rpc-url https://mainnet.base.org
+cast call 0x13beD53b2ca50c647720f159BBdB2BbB776fDE93 "getBalance()(uint256)" --rpc-url https://mainnet.base.org
 ```
 
 ---

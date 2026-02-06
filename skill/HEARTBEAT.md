@@ -18,7 +18,7 @@ Before playing, ensure:
 MY_ADDRESS=$(curl -s "https://api.bankr.bot/api/wallet" -H "Authorization: Bearer $BANKR_API_KEY" | jq -r '.address')
 
 # Contract address
-CONTRACT="0x87f977492822139cFFAdc1c66de35F24c0218dB5"
+CONTRACT="0x13beD53b2ca50c647720f159BBdB2BbB776fDE93"
 RPC="https://mainnet.base.org"
 
 # Your bots (miners)
@@ -63,7 +63,7 @@ curl -X POST "https://api.bankr.bot/api/transactions/raw" \
   -H "Content-Type: application/json" \
   -d '{
     "chain": "base",
-    "to": "0x87f977492822139cFFAdc1c66de35F24c0218dB5",
+    "to": "0x13beD53b2ca50c647720f159BBdB2BbB776fDE93",
     "value": "0",
     "data": "0x284dac230000000000000000000000000000000000000000000000000000000000000000"
   }'
@@ -76,7 +76,7 @@ curl -X POST "https://api.bankr.bot/api/transactions/raw" \
   -H "Content-Type: application/json" \
   -d '{
     "chain": "base",
-    "to": "0x87f977492822139cFFAdc1c66de35F24c0218dB5",
+    "to": "0x13beD53b2ca50c647720f159BBdB2BbB776fDE93",
     "value": "0",
     "data": "0x3ccfd60b"
   }'
@@ -188,7 +188,7 @@ curl -X POST "https://api.bankr.bot/api/transactions/raw" \
   -H "Content-Type: application/json" \
   -d '{
     "chain": "base",
-    "to": "0x87f977492822139cFFAdc1c66de35F24c0218dB5",
+    "to": "0x13beD53b2ca50c647720f159BBdB2BbB776fDE93",
     "value": "0",
     "data": "0x3ccfd60b"
   }'
