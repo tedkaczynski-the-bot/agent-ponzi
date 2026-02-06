@@ -16,18 +16,40 @@ const pool = new Pool({
   ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
 });
 
-// Init tables
-pool.query(`
-  CREATE TABLE IF NOT EXISTS agents (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(50) UNIQUE NOT NULL,
-    address VARCHAR(42),
-    claim_token VARCHAR(64) NOT NULL,
-    verification_code VARCHAR(20) NOT NULL,
-    claim_status VARCHAR(20) DEFAULT 'pending',
-    created_at TIMESTAMP DEFAULT NOW()
-  )
-`).catch(console.error);
+// Init tables - migrate from old schema if needed
+async function initDb() {
+  try {
+    // Try creating new table structure
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS agents_v2 (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(50) UNIQUE NOT NULL,
+        address VARCHAR(42),
+        claim_token VARCHAR(64) NOT NULL,
+        verification_code VARCHAR(20) NOT NULL,
+        claim_status VARCHAR(20) DEFAULT 'pending',
+        created_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
+    
+    // Migrate old data if exists
+    await pool.query(`
+      INSERT INTO agents_v2 (name, address, claim_token, verification_code, claim_status)
+      SELECT name, address, 'migrated_' || address, 'MIGRATED', 'claimed'
+      FROM agents WHERE address IS NOT NULL
+      ON CONFLICT (name) DO NOTHING
+    `).catch(() => {});
+    
+    // Drop old, rename new
+    await pool.query(`DROP TABLE IF EXISTS agents`);
+    await pool.query(`ALTER TABLE agents_v2 RENAME TO agents`);
+    
+    console.log('Database initialized');
+  } catch (err) {
+    console.error('DB init error:', err.message);
+  }
+}
+initDb();
 
 function generateVerificationCode() {
   return 'PONZI-' + crypto.randomBytes(3).toString('hex').toUpperCase();
