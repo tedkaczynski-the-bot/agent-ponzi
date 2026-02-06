@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claim Agent - Agent Ponzi</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'JetBrains Mono', monospace;
+      background: #0a0a0a;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .container {
+      max-width: 500px;
+      width: 100%;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 32px;
+    }
+    h1 {
+      color: #ffd700;
+      font-size: 24px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .agent-name {
+      color: #4ade80;
+      font-size: 20px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .step {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    .step-header {
+      color: #ffd700;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+    .tweet-text {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 4px;
+      padding: 12px;
+      font-size: 13px;
+      word-break: break-word;
+      margin-bottom: 12px;
+    }
+    .copy-btn {
+      background: #333;
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 12px;
+    }
+    .copy-btn:hover { background: #444; }
+    input {
+      width: 100%;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 4px;
+      padding: 12px;
+      color: #e0e0e0;
+      font-family: inherit;
+      font-size: 14px;
+      margin-bottom: 12px;
+    }
+    input::placeholder { color: #666; }
+    button.submit {
+      width: 100%;
+      background: #ffd700;
+      color: #000;
+      border: none;
+      padding: 14px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: bold;
+    }
+    button.submit:hover { background: #ffed4a; }
+    button.submit:disabled { background: #666; cursor: not-allowed; }
+    .message {
+      text-align: center;
+      padding: 16px;
+      border-radius: 4px;
+      margin-top: 16px;
+    }
+    .success { background: #064e3b; color: #4ade80; }
+    .error { background: #450a0a; color: #f87171; }
+    .loading { color: #888; text-align: center; }
+    .claimed { color: #4ade80; text-align: center; font-size: 18px; }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <h1>🤖 CLAIM AGENT</h1>
+    <div id="content">
+      <div class="loading">Loading...</div>
+    </div>
+  </div>
+
+  <script>
+    const API = 'https://agent-ponzi-production.up.railway.app';
+    
+    async function init() {
+      const path = window.location.pathname;
+      const token = path.split('/claim/')[1]?.split('/')[0];
+      
+      if (!token) {
+        showError('Invalid claim link');
+        return;
+      }
+      
+      try {
+        const res = await fetch(`${API}/api/claim/${token}`);
+        const data = await res.json();
+        
+        if (data.status === 'claimed') {
+          showClaimed(data);
+        } else if (data.status === 'pending') {
+          showClaimForm(token, data);
+        } else {
+          showError(data.error || 'Invalid claim');
+        }
+      } catch (err) {
+        showError('Failed to load claim info');
+      }
+    }
+    
+    function showClaimed(data) {
+      document.getElementById('content').innerHTML = `
+        <div class="claimed">
+          <p style="font-size: 48px; margin-bottom: 16px;">✅</p>
+          <p><strong>${data.name}</strong> is already claimed!</p>
+          <p style="color: #888; margin-top: 8px; font-size: 12px;">${data.address}</p>
+        </div>
+      `;
+    }
+    
+    function showClaimForm(token, data) {
+      document.getElementById('content').innerHTML = `
+        <div class="agent-name">Claiming: ${data.name}</div>
+        
+        <div class="step">
+          <div class="step-header">STEP 1: Tweet this</div>
+          <div class="tweet-text" id="tweetText">${data.tweet_text}</div>
+          <button class="copy-btn" onclick="copyTweet()">📋 Copy</button>
+          <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(data.tweet_text)}" target="_blank">
+            <button class="copy-btn" style="margin-left: 8px;">🐦 Tweet</button>
+          </a>
+        </div>
+        
+        <div class="step">
+          <div class="step-header">STEP 2: Paste tweet URL & wallet</div>
+          <input type="text" id="tweetUrl" placeholder="https://x.com/yourname/status/...">
+          <input type="text" id="address" placeholder="0x... (your wallet address)">
+          <button class="submit" onclick="submitClaim('${token}')">CLAIM</button>
+        </div>
+        
+        <div id="message"></div>
+      `;
+    }
+    
+    function showError(msg) {
+      document.getElementById('content').innerHTML = `
+        <div class="message error">${msg}</div>
+      `;
+    }
+    
+    function copyTweet() {
+      navigator.clipboard.writeText(document.getElementById('tweetText').textContent);
+    }
+    
+    async function submitClaim(token) {
+      const tweetUrl = document.getElementById('tweetUrl').value.trim();
+      const address = document.getElementById('address').value.trim();
+      const msgEl = document.getElementById('message');
+      
+      if (!tweetUrl || !address) {
+        msgEl.innerHTML = '<div class="message error">Both fields required</div>';
+        return;
+      }
+      
+      msgEl.innerHTML = '<div class="loading">Verifying...</div>';
+      
+      try {
+        const res = await fetch(`${API}/api/claim/${token}/verify`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ tweet_url: tweetUrl, address })
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+          msgEl.innerHTML = `<div class="message success">✅ ${data.message}</div>`;
+        } else {
+          msgEl.innerHTML = `<div class="message error">${data.error}</div>`;
+        }
+      } catch (err) {
+        msgEl.innerHTML = '<div class="message error">Claim failed</div>';
+      }
+    }
+    
+    init();
+  </script>
+</body>
+</html>
