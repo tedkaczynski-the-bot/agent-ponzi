@@ -8,7 +8,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const FRONTEND_URL = process.env.FRONTEND_URL || 'https://agent-ponzi.vercel.app';
+const FRONTEND_URL = process.env.FRONTEND_URL || 'https://agentponzi.xyz';
 
 // Railway Postgres
 const pool = new Pool({
